@@ -1,25 +1,99 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useRef, useEffect, useState } from 'react';
+import {Chart} from 'chart.js/auto';
+import zoomPlugin from 'chartjs-plugin-zoom';
 
-function App() {
+const initialYearData = {
+  labels: ['2019', '2020', '2021', '2022', '2023'],
+  datasets: [
+    {
+      label: 'Yearly Data',
+      data: [200, 250, 300, 400, 350],
+    },
+  ],
+};
+
+const initialMonthData = {
+  labels: [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ],
+  datasets: [
+    {
+      label: 'Monthly Data',
+      data: [20, 30, 40, 50, 45, 60, 70, 80, 70, 65, 75, 85],
+    },
+  ],
+};
+
+const initialWeekData = {
+  labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+  datasets: [
+    {
+      label: 'Weekly Data',
+      data: [5, 10, 15, 12],
+    },
+  ],
+};
+
+const BarChartZoom = () => {
+  const chartRef = useRef(null);
+  const [chartData, setChartData] = useState(initialYearData);
+
+  useEffect(() => {
+    const ctx = chartRef.current.getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'bar',
+      data: chartData,
+      options: {
+        plugins: {
+          zoom: {
+            pan: {
+              enabled: true,
+              mode: 'x',
+            },
+            zoom: {
+              wheel: {
+                enabled: true,
+              },
+              pinch: {
+                enabled: true,
+              },
+              limits: {
+                max: 10,
+              },
+            },
+          },
+        },
+      },
+    });
+    return () => {
+      chart.destroy();
+    };
+  }, [chartData]);
+
+  const handleZoomIn = () => {
+    if (chartData === initialYearData) {
+      setChartData(initialMonthData);
+    } else if (chartData === initialMonthData) {
+      setChartData(initialWeekData);
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (chartData === initialWeekData) {
+      setChartData(initialMonthData);
+    } else if (chartData === initialMonthData) {
+      setChartData(initialYearData);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{width: "50%"}}>
+      <canvas ref={chartRef} />
+      <button onClick={handleZoomIn}>Zoom In</button>
+      <button onClick={handleZoomOut}>Zoom Out</button>
     </div>
   );
-}
+};
 
-export default App;
+export default BarChartZoom;
