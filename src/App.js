@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import {Chart} from 'chart.js/auto';
+import Chart from 'chart.js/auto';
 import zoomPlugin from 'chartjs-plugin-zoom';
 
 const initialYearData = {
@@ -31,6 +31,26 @@ const initialWeekData = {
     {
       label: 'Weekly Data',
       data: [5, 10, 15, 12],
+    },
+  ],
+};
+
+const initialDayData = {
+  labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5'],
+  datasets: [
+    {
+      label: 'Daily Data',
+      data: [2, 4, 6, 8, 10],
+    },
+  ],
+};
+
+const initialHourData = {
+  labels: ['Hour 1', 'Hour 2', 'Hour 3', 'Hour 4', 'Hour 5'],
+  datasets: [
+    {
+      label: 'Hourly Data',
+      data: [1, 2, 3, 4, 5],
     },
   ],
 };
@@ -76,11 +96,19 @@ const BarChartZoom = () => {
       setChartData(initialMonthData);
     } else if (chartData === initialMonthData) {
       setChartData(initialWeekData);
+    } else if (chartData === initialWeekData) {
+      setChartData(initialDayData);
+    } else if (chartData === initialDayData) {
+      setChartData(initialHourData);
     }
   };
 
   const handleZoomOut = () => {
-    if (chartData === initialWeekData) {
+    if (chartData === initialHourData) {
+      setChartData(initialDayData);
+    } else if (chartData === initialDayData) {
+      setChartData(initialWeekData);
+    } else if (chartData === initialWeekData) {
       setChartData(initialMonthData);
     } else if (chartData === initialMonthData) {
       setChartData(initialYearData);
@@ -88,7 +116,7 @@ const BarChartZoom = () => {
   };
 
   return (
-    <div style={{width: "50%"}}>
+    <div style={{width : "50%"}}>
       <canvas ref={chartRef} />
       <button onClick={handleZoomIn}>Zoom In</button>
       <button onClick={handleZoomOut}>Zoom Out</button>
